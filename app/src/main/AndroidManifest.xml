@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      libxposed API 102 模块：不再使用 assets/xposed_init 与 xposedmodule meta-data，
+      模块声明全部位于 META-INF/xposed/（module.prop / java_init.list / scope.list）。
+    -->
+    <application
+        android:name=".MaskApp"
+        android:label="MiFit机型伪装"
+        android:allowBackup="false"
+        android:theme="@android:style/Theme.DeviceDefault">
+
+        <!-- LSPosed 模块列表中显示的功能概述 -->
+        <meta-data
+            android:name="xposeddescription"
+            android:value="小米运动健康机型伪装：修改 App 内设备机型档案，使表盘商店按目标机型返回对应表盘市场（libxposed API 102，测试用途）" />
+
+        <!--
+          libxposed service 接入点：LSPosed 框架经此 provider 推送服务 binder，
+          设置页才拿得到 RemotePreferences 写入口。
+          Gradle 场景该声明由 service AAR 内置 manifest 自动合并；本工程为手工
+          流水线构建（无 manifest merger），须显式声明，authority 固定为
+          ${applicationId}.XposedService。
+        -->
+        <provider
+            android:name="io.github.libxposed.service.XposedProvider"
+            android:authorities="io.github.mifitmask.XposedService"
+            android:exported="true" />
+
+        <!-- 本地表盘安装中继：目标进程经此读取用户选择的表盘文件（只读，限 relay 目录） -->
+        <provider
+            android:name="io.github.mifitmask.FileServeProvider"
+            android:authorities="io.github.mifitmask.files"
+            android:exported="true" />
+
+        <!--
+          设置页（真实 Activity）：带 LSPosed 模块设置 category，
+          LSPosed 管理器通过它打开模块设置。
+        -->
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS" />
+            </intent-filter>
+        </activity>
+
+        <!-- 桌面图标 alias：承载 LAUNCHER 入口 -->
+        <activity-alias
+            android:name=".LauncherAlias"
+            android:exported="true"
+            android:targetActivity=".SettingsActivity"
+            android:label="MiFit机型伪装">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+    </application>
+
+</manifest>

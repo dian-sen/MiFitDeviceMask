@@ -1,0 +1,40 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.mifitmask'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "io.github.mifitmask"
+        minSdk 26
+        targetSdk 35
+        // 版本约定（见 docs/WORKFLOW.md）：versionCode = major*1000 + minor*100 + patch
+        versionCode 1400
+        versionName "1.4.0"
+    }
+
+    buildTypes {
+        release {
+            // 关闭混淆：入口类名写在 META-INF/xposed/java_init.list，
+            // 混淆改名会导致框架找不到入口；模块体量小，混淆收益为零。
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    // libxposed 现代 API 102（compileOnly，运行期由 LSPosed 框架提供，不打进 APK）
+    compileOnly 'io.github.libxposed:api:102.0.0'
+    // 模块 App（设置页）与 LSPosed 框架服务通信，读写 RemotePreferences
+    implementation 'io.github.libxposed:service:102.0.0'
+    // service 的 runtime 依赖：IXposedService 等 AIDL Binder 类（Gradle 传递依赖自动带上；
+    // 显式声明使手工构建流水线的依赖清单与 Gradle 一致）
+    implementation 'io.github.libxposed:interface:102.0.0'
+}

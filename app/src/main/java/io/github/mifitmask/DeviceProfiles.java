@@ -48,6 +48,8 @@ public final class DeviceProfiles {
             new Profile("mi_band_9_pro", "小米手环 9 Pro", "miwear.watch.n67cn", null, null),
             new Profile("mi_band_9_active", "小米手环 9 Active", "miwear.watch.n69cn", null, null),
             new Profile("mi_band_10", "小米手环 10", "miwear.watch.o66cn", null, null),
+            // 小米手环 10 Pro：代号按命名规律推断（O=2025，7=手环 Pro），待验证
+            new Profile("mi_band_10_pro", "小米手环 10 Pro", "miwear.watch.o67cn", null, null),
             new Profile("watch_s3", "Xiaomi Watch S3", "mijia.watch.n62", null, null),
             new Profile("watch_s4", "Xiaomi Watch S4", "mijia.watch.o62", null, null),
             new Profile("redmi_watch_4", "Redmi Watch 4", "lchz.watch.n65", null, null),

@@ -5,6 +5,7 @@
       libxposed API 102 模块：不再使用 assets/xposed_init 与 xposedmodule meta-data，
       模块声明全部位于 META-INF/xposed/（module.prop / java_init.list / scope.list）。
     -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:name=".MaskApp"
         android:label="MiFit机型伪装"

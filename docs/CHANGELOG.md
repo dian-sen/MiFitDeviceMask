@@ -3,6 +3,18 @@
 > 遵循 Keep a Changelog 格式；版本号语义化（见 docs/WORKFLOW.md）。
 > 每次发版必须在本文件追加条目，并归档 `docs/versions/v{版本}-{日期}.zip` 与 `.apk`。
 
+## [1.4.1] - 2026-09-28
+
+### Fixed（真机反馈两连）
+- **表盘商店直取 SecurityException**：模块 App 的 manifest **漏声明 INTERNET 权限**（v1.2 引入商店直取时即缺失）——已补 `<uses-permission android:name="android.permission.INTERNET"/>`。
+- **模块 App 间歇性启动闪退**（历史日志 5 次记录）：LSPosed 服务绑定回调早于 UI 构建到达时 `loadToUi` 触发 `mTvStatus` NPE。已加空保护 + onResume 兜底刷新。
+- 另：v1.1.x 时代 SettingsActivity 的同型 NPE 崩溃记录（23:01/23:03 等）属当时版本，与现版本无涉。
+
+### Added
+- 预设新增「小米手环 10 Pro」= `miwear.watch.o67cn`（按命名规律推断，标注待验证）。
+- 商店直取新增**「仅下载表盘文件到手机（不安装）」**按钮：.bin 保存到系统下载目录（API 29+ MediaStore.Downloads；旧设备回退应用外部目录）。
+- 设置页新增**机型代号命名规则说明**（年份字母 M/N/O/P… + 系列数字 6=手环 7=手环 Pro 2=Watch S 5=Redmi Watch + 地区后缀），未列明机型可用「自定义机型」直接填代号，并可用商店直取验证代号有效性（能查到表盘即有效）。
+
 ## [1.4.0] - 2026-09-27
 
 ### Fixed（本地安装卡"已发起"）

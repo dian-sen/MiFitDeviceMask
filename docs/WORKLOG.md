@@ -248,6 +248,7 @@
 ### 待办
 - [ ] 用户装 v1.4.0：目标选手环 10（o66cn）+ 试一个 faceId → 查询/下载/入队/推送全链路验收。
 - [ ] faceId 挖掘工具/指引（README 引 get-mi-watchface 或内置枚举）。
+- [x] GitHub 同步完成：仓库 dian-sen/MiFitDeviceMask（103 文件经 Git Data API 推送，commit f9ca379）；README 重写（项目状态表/上游致谢表/许可证声明/免责摘要）+ 新增 docs/DISCLAIMER.md（完整法律声明：项目性质/商标/表盘版权/逆向与服务条款/上游许可边界/无担保与风险自担/隐私提示/责任限制/许可证保留）+ 仓库描述更新为"纯测试项目·功能尚未实现完成"。
 
 ---
 

@@ -55,6 +55,7 @@ public class SettingsActivity extends Activity implements MaskApp.Listener {
     private TextView mTvInstall;
     private EditText mEtStoreFaceId;
     private Button mBtnStoreFetch;
+    private Button mBtnStoreDl;
     private TextView mTvStore;
     private TextView mTvStatus;
     private Button mBtnSave;
@@ -179,13 +180,27 @@ public class SettingsActivity extends Activity implements MaskApp.Listener {
                 "商店直取 · 表盘 faceId");
         mBtnStoreFetch = new Button(this);
         mBtnStoreFetch.setText("从官方商店获取目标机型的该表盘并安装");
-        mBtnStoreFetch.setOnClickListener(v -> storeFetchInstall());
+        mBtnStoreFetch.setOnClickListener(v -> storeFetchInstall(false));
         root.addView(mBtnStoreFetch, pickLp);
+        mBtnStoreDl = new Button(this);
+        mBtnStoreDl.setText("仅下载表盘文件到手机（不安装）");
+        mBtnStoreDl.setOnClickListener(v -> storeFetchInstall(true));
+        root.addView(mBtnStoreDl, pickLp);
         mTvStore = new TextView(this);
         mTvStore.setTextSize(12);
         mTvStore.setTextColor(Color.rgb(60, 60, 96));
         mTvStore.setPadding(dp(4), dp(6), 0, 0);
         root.addView(mTvStore);
+        TextView codeRule = new TextView(this);
+        codeRule.setTextSize(11);
+        codeRule.setTextColor(Color.rgb(110, 110, 120));
+        codeRule.setPadding(dp(4), dp(8), 0, 0);
+        codeRule.setText("机型代号规则（未列明机型可自行推导，选「自定义机型」填写）："
+                + "年份字母（M=2023 N=2024 O=2025 P=2026…）+ 两位数字（第二位：6=手环标准/NFC、"
+                + "7=手环 Pro、2=Watch S、5=Redmi Watch）+ 地区后缀（cn=国行、gl=全球等）。"
+                + "例：小米手环 10 Pro ≈ miwear.watch.o67cn；代号是否有效可用上方「商店直取」验证"
+                + "（能查到表盘即有效）。");
+        root.addView(codeRule);
 
         mBtnSave = new Button(this);
         mBtnSave.setText("保存设置");
@@ -308,6 +323,10 @@ public class SettingsActivity extends Activity implements MaskApp.Listener {
     // ---------- 装载 / 保存 ----------
 
     private void loadToUi() {
+        // 服务绑定回调可能早于 UI 构建/晚于销毁到达（v1.4.1 修复 NPE 闪退）
+        if (mTvStatus == null || mBtnSave == null) {
+            return;
+        }
         boolean connected = mPrefs != null;
         if (connected) {
             mTvStatus.setText("● 已连接 LSPosed 服务，设置写入后自动同步到目标进程");
@@ -390,8 +409,8 @@ public class SettingsActivity extends Activity implements MaskApp.Listener {
         return (int) (v * getResources().getDisplayMetrics().density + 0.5f);
     }
 
-    /** 表盘商店直取：按当前选中机型 + faceId 从官方公开接口获取并进入本地安装队列。 */
-    private void storeFetchInstall() {
+    /** 表盘商店直取：按当前选中机型 + faceId 从官方公开接口获取；downloadOnly=true 时仅下载。 */
+    private void storeFetchInstall(boolean downloadOnly) {
         if (mPrefs == null) {
             Toast.makeText(this, "未连接 LSPosed 服务，无法入队", Toast.LENGTH_LONG).show();
             return;
@@ -430,7 +449,13 @@ public class SettingsActivity extends Activity implements MaskApp.Listener {
         };
         mTvStore.setText("发起中…");
         FaceStoreFetch.fetchAndEnqueue(getApplicationContext(), pa, model, faceId,
-                s -> runOnUiThread(() -> mTvStore.setText(s)));
+                s -> runOnUiThread(() -> mTvStore.setText(s)), downloadOnly);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadToUi();
     }
 
     private String versionName() {
